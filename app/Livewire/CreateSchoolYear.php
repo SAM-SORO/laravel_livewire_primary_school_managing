@@ -24,6 +24,7 @@ class CreateSchoolYear extends Component
 
         // Vérifier si cette année scolaire existe déjà
         $existingSchoolYear = SchoolYear::where('startYear', $this->startYear)->where('endYear', $this->endYear)->first();
+
         if ($existingSchoolYear) {
             return redirect()->back()->with('error', 'Cette année scolaire a déjà été enregistrée.');
         }
@@ -41,7 +42,9 @@ class CreateSchoolYear extends Component
             $schoolYear->currentYear = Carbon::now()->format('Y');
             $schoolYear->save();
 
-            return redirect()->route('schoolYears')->with('success', 'L\'année scolaire a bien été ajoutée.');
+            return redirect()->back()->with('success', 'L\'année scolaire a bien été ajoutée.');
+
+            // return redirect()->route('schoolYears')->with('success', 'L\'année scolaire a bien été ajoutée.')  pour le redirigrer vers l'affichage
 
         } catch (\Exception $e) {
             // Gérer l'exception ici
@@ -57,7 +60,7 @@ class CreateSchoolYear extends Component
     public function render()
     {
         // Remplir la liste des années disponibles
-        $years = range(date('Y') - 2, date('Y') + 10);
+        $years = range(date('Y') - 2, date('Y') + 2);
 
         return view('livewire.create-school-year', ['years' => $years]);
     }

@@ -1,20 +1,14 @@
 <div class="p-2 bg-white shadow-sm">
     <form wire:submit.prevent="store">
         @csrf
+        @method('post')
 
-        @if(session('error'))
-            <div id="errorMessage" class="w-100 p-4 bg-red-400 border-red-500 text-white">{{ session('error') }}</div>
-
-        @endif
-
-
-        {{-- <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+        {{--<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
                 <p class="font-bold">Attention!</p>
                 <p>Vous avez une notification importante.</p>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
                     <span aria-hidden="true">&times;</span>
-                </button>
-            </div> --}}
+                </button></div>--}}
 
         <div class="p-5">
             <label for="startYear">Début de l'année</label>
@@ -52,9 +46,9 @@
             @enderror
         </div>
 
-        <div class="p-5 flex justify-between items-center">
+        <div class="p-5 flex  justify-between items-center bg-gray-100">
             <button type="button" class="bg-red-600 p-3 rounded-sm text-white hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring focus:ring-red-300">Annuler</button>
-            <button type="submit" class="bg-green-700 p-3 rounded-sm text-white hover:bg-green-600 active:bg-green-700 focus:outline-none focus:ring focus:ring-green-300">Ajouter</button>
+            <button type="submit" class="bg-green-700 p-3 rounded-sm text-white hover:bg-green-600 active:bg-green-700 focus:outline-none focus:ring focus:ring-green-300" >Ajouter</button>
         </div>
     </form>
 </div>

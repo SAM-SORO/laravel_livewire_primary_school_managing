@@ -35,6 +35,7 @@ class SchoolYears extends Component
         if ($this->searchEnter) {
             $schoolYearList = SchoolYear::where('startYear', 'like', '%' . $this->searchEnter . '%')
                 ->orWhere('endYear', 'like', '%' . $this->searchEnter . '%')
+                ->orWhere('id', 'like', '%' . $this->searchEnter . '%')
                 ->orWhere(function($query) {
                     // Permet de traiter la recherche sous la forme "année_début_année_fin"
                     $searchParts = explode('-', $this->searchEnter);
@@ -48,7 +49,6 @@ class SchoolYears extends Component
         }
 
         return view('livewire.school-years', ['schoolYearList' => $schoolYearList]);
-
     }
 }
 

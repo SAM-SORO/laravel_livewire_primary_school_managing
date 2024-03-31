@@ -12,13 +12,7 @@
         </div>
 
         <div class="flex flex-col">
-            {{-- Message qui apparaitra après operation --}}
-            @if(session('success'))
-            <div id="successMessage" class="block p-3 bg-green-700 text-white rounded-sm shadow-sm">
-                {{ session('success') }}
-            </div>
-            @endif
-
+            {{-- Message qui apparaitra après ajout. on a decider que le message apparaisse au niveau du formulaire d'ajout sinon on allait le mettre ici --}}
             {{-- Styliser le tableau --}}
             <div class="overflow-x-auto">
                 <div class="py-4 inline-block min-w-full">

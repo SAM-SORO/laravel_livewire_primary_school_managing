@@ -20,6 +20,11 @@
                         {{ __('Niveaux') }}
                     </x-nav-link>
 
+                    <x-nav-link href="{{ route('batiment') }}" :active="request()->routeIs('batiment')">
+                        {{ __('Batiment') }}
+                    </x-nav-link>
+
+
                     <x-nav-link href="{{ route('schoolYears') }}" :active="request()->routeIs('schoolYears')">
                         {{ __('Anne scolaire') }}
                     </x-nav-link>
