@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::table('levels', function (Blueprint $table) {
             //
             Schema::create('levels', function (Blueprint $table) {
-                $table->id();
+                $table->id()->autoIncrement();
                 $table->string('libele'); // fait allusion a la classe
                 $table->integer('scolarite'); //montant de scolarite
+
                 $table->unsignedBigInteger('schoolYear_id');
                 $table->foreign('schoolYear_id')->references('id')->on('school_years');
+                
                 $table->timestamps();
             });
         });

@@ -45,18 +45,7 @@
 
         @livewireScripts
 
-        <script>
-            // Sélectionnez l'élément de l'alerte
-            const errorMessage = document.getElementById('errorMessage');
-
-            // Vérifiez si l'alerte existe
-            if (errorMessage) {
-                // Ajoutez un délai de 500 ms avant de masquer l'alerte
-                setTimeout(function() {
-                    errorMessage.style.display = 'none';
-                }, 500);
-            }
         </script>
-        
+
     </body>
 </html>

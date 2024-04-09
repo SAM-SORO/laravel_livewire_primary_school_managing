@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Level;
+use App\Models\SchoolYear;
 use Livewire\WithPagination;
 
 use Livewire\Component;
@@ -14,29 +15,32 @@ class ListeNiveaux extends Component
     public $searchEnter = '';
 
 
-    public function search()
-    {
-        // Exécute une requête de recherche basée sur l'année saisie
-        $this->resetPage();
-    }
-
     public function delete(Level $level){
         $level->delete();
-        return redirect()->route('schoolYears')->with('success', 'Niveau supprimer avec succès.');
+        return redirect()->route('niveaux')->with('success', 'Niveau supprimer avec succès.');
     }
 
     public function render()
     {
-        // Recherche des années scolaires basée sur la saisie de l'utilisateur
+        // Obtenez l'année scolaire active
+        $activeSchoolYear = SchoolYear::where('active', '1')->first();
+
+        // Recherche des niveaux basée sur la saisie de l'utilisateur
+        $levels = Level::query();
+
         if ($this->searchEnter) {
-            $levels = Level::where('libele', 'like', '%' . $this->searchEnter . '%')
+            $levels->where('libele', 'like', '%' . $this->searchEnter . '%')
                 ->orWhere('scolarite', 'like', '%' . $this->searchEnter . '%')
-                ->orWhere('id', 'like', '%' . $this->searchEnter . '%')
-                ->paginate(5);
-        } else {
-            $levels = Level::paginate(10);
+                ->orWhere('id', 'like', '%' . $this->searchEnter . '%');
         }
 
-        return view('livewire.liste-niveaux', ['levels' => $levels]);
+        // Si une année scolaire active est trouvée, filtrez les niveaux en conséquence
+        if ($activeSchoolYear) {
+            $levels->where('schoolYear_id', $activeSchoolYear->id);
+        }
+
+        $levels = $levels->paginate(5);
+
+        return view('livewire.liste-niveaux', compact('levels'));
     }
 }

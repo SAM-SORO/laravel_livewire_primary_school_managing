@@ -16,6 +16,23 @@
                         {{ __('Accueil') }}
                     </x-nav-link>
 
+                    <x-nav-link href="{{ route('affectation') }}" :active="request()->routeIs('affectation')">
+                        {{ __('affectations') }}
+                    </x-nav-link>
+
+                    <x-nav-link href="{{ route('inscription') }}" :active="request()->routeIs('inscription')">
+                        {{ __('inscriptions') }}
+                    </x-nav-link>
+
+                    <x-nav-link href="{{ route('classes') }}" :active="request()->routeIs('classes')">
+                        {{ __('Classes') }}
+                    </x-nav-link>
+
+                    <x-nav-link href="{{ route('eleves') }}" :active="request()->routeIs('eleves')">
+                        {{ __('Eleves') }}
+                    </x-nav-link>
+
+
                     <x-nav-link href="{{ route('niveaux') }}" :active="request()->routeIs('niveaux')">
                         {{ __('Niveaux') }}
                     </x-nav-link>
@@ -23,7 +40,6 @@
                     <x-nav-link href="{{ route('batiment') }}" :active="request()->routeIs('batiment')">
                         {{ __('Batiment') }}
                     </x-nav-link>
-
 
                     <x-nav-link href="{{ route('schoolYears') }}" :active="request()->routeIs('schoolYears')">
                         {{ __('Anne scolaire') }}

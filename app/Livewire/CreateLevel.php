@@ -12,6 +12,11 @@ class CreateLevel extends Component
     public $niveau;
     public $scolarite;
 
+    public function annuler()
+    {
+        return redirect()->route('niveaux');
+    }
+
     public function store()
     {
         $this->validate([
@@ -24,7 +29,7 @@ class CreateLevel extends Component
         $activeSchoolYear = SchoolYear::where('active', '1')->first();
 
         if (!$activeSchoolYear) {
-            return redirect()->back()->with('error', 'Aucune année n\'est active.');
+            return redirect()->route('schoolYears')->with('error', 'Aucune année n\'est active.');
 
         } else {
             // Vérifier si le niveau a déjà été ajouté pour l'année en cours
@@ -33,7 +38,7 @@ class CreateLevel extends Component
                                   ->first();
 
             if ($existingLevel) {
-                return redirect()->back()->with('error', 'Ce niveau a déjà été ajouté pour l\'année en cours.');
+                return redirect()->route('create-school-level')->with('error', 'Ce niveau a déjà été enregistrer .');
             }
 
             // dd($this->niveau, $this->scolarite,  $activeSchoolYear->id );
@@ -46,10 +51,10 @@ class CreateLevel extends Component
                 $level->schoolYear_id = $activeSchoolYear->id;
                 $level->save();
 
-                return redirect()->back()->with('success', 'Niveau ajouté avec succès');
+                return redirect()->route('niveaux')->with('success', 'Niveau ajouté avec succès');
 
             } catch(Exception $e) {
-                return redirect()->back()->with('error', "Une erreur s'est produite lors de l'ajout");
+                return redirect()->route('create-school-level')->with('error', "Une erreur s'est produite lors de l'enregistrement du niveau");
             }
         }
     }

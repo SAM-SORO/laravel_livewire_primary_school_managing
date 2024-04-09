@@ -23,6 +23,11 @@ class EditLevel extends Component
         $this->scolarite = $this->level->scolarite;
     }
 
+    public function annuler()
+    {
+        return redirect()->route('niveaux');
+    }
+
     public function store(){
         $this->validate([
             'niveau' => 'string|required',

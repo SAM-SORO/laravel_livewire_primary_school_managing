@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('school_years', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->string('startYear');
             $table->string('endYear');
             $table->string('currentYear');

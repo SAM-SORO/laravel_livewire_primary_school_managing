@@ -10,6 +10,11 @@ class CreateSchoolYear extends Component
     public $startYear;
     public $endYear;
 
+    public function annuler()
+    {
+        return redirect()->route('schoolYears');
+    }
+
     public function store()
     {
         // Validation des données du formulaire
@@ -24,16 +29,14 @@ class CreateSchoolYear extends Component
 
         // Vérifier si cette année scolaire existe déjà
         $existingSchoolYear = SchoolYear::where('startYear', $this->startYear)->where('endYear', $this->endYear)->first();
-
         if ($existingSchoolYear) {
-            return redirect()->back()->with('error', 'Cette année scolaire a déjà été enregistrée.');
+            return redirect()->route('create-school-year')->with('error', 'Cette année scolaire a déjà été enregistrée.');
         }
 
         // Vérifier si les années scolaires sont successives
         if ($this->startYear != $this->endYear - 1) {
-            return redirect()->back()->with('error', 'Les années scolaires doivent être successives.');
+            return redirect()->route('create-school-year')->with('error', 'Les années scolaires doivent être successives.');
         }
-
         // Création de la nouvelle année scolaire
         try {
             $schoolYear = new SchoolYear();
@@ -42,13 +45,13 @@ class CreateSchoolYear extends Component
             $schoolYear->currentYear = Carbon::now()->format('Y');
             $schoolYear->save();
 
-            return redirect()->back()->with('success', 'L\'année scolaire a bien été ajoutée.');
+            return redirect()->route('schoolYears')->with('success', 'L\'année scolaire a bien été enregistrer.');
 
             // return redirect()->route('schoolYears')->with('success', 'L\'année scolaire a bien été ajoutée.')  pour le redirigrer vers l'affichage
 
         } catch (\Exception $e) {
             // Gérer l'exception ici
-            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'ajout de l\'année scolaire.');
+            return redirect()->route('create-school-year')->with('error', 'Une erreur est survenue lors de l\'enregistrement de l\'année scolaire.');
         }
     }
 

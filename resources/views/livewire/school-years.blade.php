@@ -4,11 +4,11 @@
         <div class="flex justify-between items-center">
             <div class="w-100 flex xl:justify-between">
                 <div class="xl:w-80 md:w-80 sm:60">
-                    <input type="search" id="searche" class="block mt-1 border-gray-300 rounded-sm text-sm w-full " placeholder="Rechercher" wire:model="searchEnter">
+                    <input type="search" wire:model.live="searchEnter" id="search" class="block mt-1 border-gray-300 rounded-sm text-sm w-full" placeholder="Rechercher">
                 </div>
-                <button type="button" class="bg-blue-700 ml-4 rounded-md px-2 text-sm text-white" wire:click="search">Rechercher</button>
             </div>
-            <a href="{{ route('school.create-school-year') }}" class="bg-blue-500 rounded-md p-2 text-sm text-white">Nouvelle Année Scolaire</a>
+
+            <a href="{{ route('create-school-year') }}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Nouvelle Année Scolaire</a>
         </div>
 
         <div class="flex flex-col">

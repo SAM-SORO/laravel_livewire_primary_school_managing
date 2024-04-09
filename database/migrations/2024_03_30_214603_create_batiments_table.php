@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('batiments', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->string('nomBat');
             $table->date('dateBat');
             $table->timestamps();

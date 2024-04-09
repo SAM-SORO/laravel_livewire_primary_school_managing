@@ -4,11 +4,11 @@
         <div class="flex justify-between items-center">
             <div class="w-100 flex xl:justify-between">
                 <div class="xl:w-80 md:w-80 sm:60">
-                    <input type="search" id="searche" class="block mt-1 border-gray-300 rounded-sm text-sm w-full " placeholder="Rechercher" wire:model="searchEnter">
+                    <input type="search" wire:model.live="searchEnter" id="search" class="block mt-1 border-gray-300 rounded-sm text-sm w-full" placeholder="Rechercher">
                 </div>
-                <button type="button" class="bg-blue-700 ml-4 rounded-md px-2 text-sm text-white" wire:click="search">Rechercher</button>
             </div>
-            <a href="{{ route('school.create-school-level') }}" class="bg-blue-500 rounded-md p-2 text-sm text-white">Ajouter niveau</a>
+
+            <a href="{{ route('create-school-level') }}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Ajouter niveau</a>
         </div>
 
         @if (Session::has('success'))
@@ -33,7 +33,7 @@
                             <thead class="border-b bg-gray-50">
                                 <tr>
                                     <th class="text-sm font-medium text-gray-900 px-6 py-6">ID</th>
-                                    <th class="text-sm font-medium text-gray-900 px-6 py-6">Classe</th>
+                                    <th class="text-sm font-medium text-gray-900 px-6 py-6">Niveaux</th>
                                     <th class="text-sm font-medium text-gray-900 px-6 py-6">Montant de la Scolarité</th>
                                     <th class="text-sm font-medium text-gray-900">Actions</th>
                                 </tr>
@@ -47,8 +47,9 @@
 
                                         {{-- items-center justify-center" style="vertical-align:middle" --}}
                                         <td class=" gap-3">
-                                            <a href="{{ route('school.edit-school-level', $item->id) }}" class="text-md bg-blue-500 p-1 text-white rounded-sm">Modifier</a>
-                                            <span class="text-md bg-red-500 p-1 text-white rounded-sm" wire:click="delete({{$item->id}})" style="cursor: pointer">Supprimer</span>
+                                            <a href="{{ route('edit-school-level', $item->id) }}" class="text-md bg-blue-500 p-2 text-white rounded-sm  hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300" >Modifier</a>
+
+                                            <span class="text-md bg-red-500 p-2 text-white rounded-sm  hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring focus:ring-red-300"  wire:click="delete({{$item->id}})" style="cursor: pointer">Supprimer</span>
                                         </td>
 
                                     </tr>

@@ -60,8 +60,10 @@
         </div>
 
         <div class="p-5 flex justify-between items-center bg-gray-100">
-            <button class="bg-red-600 p-3 rounded-sm text-white text-sm">Annuler</button>
-            <button class="bg-green-600 p-3 rounded-sm text-white text-sm" type="submit">Ajouter</button>
+            <button id="btnAnnuler" class="bg-red-600 p-3 rounded-sm text-white hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring focus:ring-red-300" type="button" wire:click="annuler">Annuler</button>
+
+
+            <button type="submit" class="bg-green-700 p-3 rounded-sm text-white hover:bg-green-600 active:bg-green-700 focus:outline-none focus:ring focus:ring-green-300" >Ajouter</button>
         </div>
 
     </form>

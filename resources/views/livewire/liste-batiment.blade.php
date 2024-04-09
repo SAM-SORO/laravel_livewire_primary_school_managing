@@ -4,15 +4,15 @@
         <div class="flex justify-between items-center">
             <div class="w-100 flex xl:justify-between">
                 <div class="xl:w-80 md:w-80 sm:60">
-                    <input type="search" id="searche" class="block mt-1 border-gray-300 rounded-sm text-sm w-full " placeholder="Rechercher" wire:model="searchEnter">
+                    <input type="search" wire:model.live="searchEnter" id="search" class="block mt-1 border-gray-300 rounded-sm text-sm w-full" placeholder="Rechercher">
                 </div>
-                <button type="button" class="bg-blue-700 ml-4 rounded-md px-2 text-sm text-white" wire:click="search">Rechercher</button>
             </div>
-            <a href="{{ route('school.create-school-level') }}" class="bg-blue-500 rounded-md p-2 text-sm text-white">Ajouter niveau</a>
+
+            <a href="{{ route('create-batiment') }}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Ajouter batiment</a>
         </div>
 
         @if (Session::has('success'))
-            <div class="border-green-500 bg-green-400 text-white text-sm font-bold px-4 my-4 py-3 rounded relative" id="success-ajout">
+            <div class="border-green-500 bg-green-400 text-white text-sm font-bold px-4 mt-6 py-3 rounded relative" id="success-ajout">
                 <span>{{ Session::get('success') }}</span>
                 <span class="absolute top-0 bottom-0 right-0 px-4 py-3" id="close-success">
                     <svg class="fill-current h-6 w-6 text-white-50" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -33,22 +33,22 @@
                             <thead class="border-b bg-gray-50">
                                 <tr>
                                     <th class="text-sm font-medium text-gray-900 px-6 py-6">ID</th>
-                                    <th class="text-sm font-medium text-gray-900 px-6 py-6">Classe</th>
-                                    <th class="text-sm font-medium text-gray-900 px-6 py-6">Montant de la Scolarité</th>
+                                    <th class="text-sm font-medium text-gray-900 px-6 py-6">Nom du batiment</th>
+                                    <th class="text-sm font-medium text-gray-900 px-6 py-6">Date de construction</th>
                                     <th class="text-sm font-medium text-gray-900">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($levels as $item)
+                                @forelse ($batiments as $item)
                                     <tr class="border-b-2 border-gray-100">
                                         <td class="text-sm font-medium text-gray-900 px-6 py-6">{{ $item->id }}</td>
-                                        <td class="text-sm font-medium text-gray-900 px-6 py-6">{{ $item->libele }}</td>
-                                        <td class="text-sm font-medium text-gray-900 px-6 py-6">{{ $item->scolarite }}</td>
+                                        <td class="text-sm font-medium text-gray-900 px-6 py-6">{{ $item->nomBat }}</td>
+                                        <td class="text-sm font-medium text-gray-900 px-6 py-6">{{ date('d/m/Y',strtotime($item->dateBat)) }}</td>
 
                                         {{-- items-center justify-center" style="vertical-align:middle" --}}
-                                        <td class=" gap-3">
-                                            <a href="{{ route('school.edit-school-level', $item->id) }}" class="text-md bg-blue-500 p-1 text-white rounded-sm">Modifier</a>
-                                            <span class="text-md bg-red-500 p-1 text-white rounded-sm" wire:click="delete({{$item->id}})" style="cursor: pointer">Supprimer</span>
+                                        <td class="">
+                                            <a href="{{ route('school.edit-batiment', $item->id) }}" class="text-md bg-blue-500 p-2 text-white rounded-sm">Modifier</a>
+                                            <span class="text-md bg-red-500 p-2 text-white rounded-sm" wire:click="delete({{$item->id}})" style="cursor: pointer">Supprimer</span>
                                         </td>
 
                                     </tr>
@@ -68,8 +68,8 @@
                         </table>
 
                         <div class="mt-3">
-                            @if (!empty($levels) && $levels->count() > 0)
-                                {{ $levels->links() }}
+                            @if (!empty($batiments) && $batiments->count() > 0)
+                                {{ $batiments->links() }}
                             @endif
                         </div>
 
