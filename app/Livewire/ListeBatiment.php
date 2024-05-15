@@ -1,37 +1,61 @@
 <?php
 
 namespace App\Livewire;
-
 use App\Models\Batiment;
+use App\Models\SchoolYear;
 use Livewire\Component;
 
 class ListeBatiment extends Component
 {
     public $searchEnter;
+    public $IdBatimentToDelete;
 
-    public function search()
+
+    public function confirmDelete($IdBatiment){
+        $this->IdBatimentToDelete = $IdBatiment;
+    }
+
+
+    public function delete(Batiment $batiment)
     {
-        // Exécute une requête de recherche basée sur l'année saisie
-        $this->resetPage();
+        // Trouver le bâtiment à supprimer
+        $batiment = Batiment::findOrFail($this->IdBatimentToDelete);
+
+        // Vérifier s'il existe des relations (par exemple, les classes associées) et demander une confirmation
+        if ($batiment->classes()->exists()) {
+            // Si des relations existent, émettre un message d'erreur
+            session()->flash('error', 'Impossible de supprimer ce bâtiment car il est utiliser dans d\'autres tables.');
+            return redirect()->back();
+        } else {
+            // Si aucune relation n'existe, supprimer le bâtiment
+            $batiment->delete();
+            // Émettre un message de succès
+            session()->flash('success', 'Le bâtiment a été supprimé avec succès.');
+            return redirect()->back();
+        }
+
     }
 
-    public function delete(Batiment $batiment){
-        $batiment->delete();
-        return redirect()->route('batiment')->with('success', 'Batiment supprimer avec succès.');
-    }
 
     public function render()
     {
-        // Recherche des années scolaires basée sur la saisie de l'utilisateur
+        // Vérifier s'il existe des années scolaires actives
+        $anneesScolairesActives = SchoolYear::where('active', '1')->exists();
+
+        // Recherche des bâtiments basée sur la saisie de l'utilisateur
         if ($this->searchEnter) {
             $batiments = Batiment::where('nomBat', 'like', '%' . $this->searchEnter . '%')
                 ->orWhere('dateBat', 'like', '%' . $this->searchEnter . '%')
                 ->orWhere('id', 'like', '%' . $this->searchEnter . '%')
+                ->orderBy('created_at', 'desc') // Tri par date de création décroissante
                 ->paginate(5);
         } else {
-            $batiments = Batiment::paginate(10);
+            $batiments = Batiment::orderBy('created_at', 'desc') // Tri par date de création décroissante
+                ->paginate(10);
         }
 
         return view('livewire.liste-batiment', compact('batiments'));
     }
+
+
 }

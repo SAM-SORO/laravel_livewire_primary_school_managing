@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('nom');
             $table->string('prenom');
             $table->string('sexe',1);
-            $table->string('age');
             $table->string('photo')->nullable();
             $table->date('naissance');
             $table->string('contactParent');

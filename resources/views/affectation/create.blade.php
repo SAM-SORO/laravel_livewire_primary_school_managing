@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-2 px-12">
+    <div class="py-12 px-12 mx-auto"  style="max-width: 46rem">
         @livewire('create-affectation')
     </div>
 </x-app-layout>

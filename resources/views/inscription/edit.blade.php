@@ -5,7 +5,12 @@
         </h2>
     </x-slot>
 
-    <div class="py-2 px-12">
-        @livewire('edit-inscription', ['inscription' => $inscription])
+    <div class="py-12">
+        <div class="mx-auto sm:px-6 lg:px-8" style="max-width: 44rem">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                @livewire('edit-inscription', ['inscription' => $inscription])
+            </div>
+        </div>
     </div>
+
 </x-app-layout>

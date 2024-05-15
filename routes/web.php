@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NiveauController;
+use App\Http\Controllers\ParentController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\SchoolAffecterController;
 use App\Http\Controllers\SchoolBatimentController;
 use App\Http\Controllers\SchoolClassesController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\SchoolInscrireController;
 use App\Http\Controllers\SchoolLevelController;
 use App\Http\Controllers\SchoolStudentController;
 use App\Http\Controllers\SchoolYearController;
+use App\Http\Controllers\SendMailController;
 use App\Models\SchoolYear;
 use Illuminate\Database\Eloquent\Scope;
 
@@ -23,21 +26,21 @@ use Illuminate\Database\Eloquent\Scope;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+
+    Route::get('/', function () {
         return view('dashboard');
     })->name('dashboard');
 
     Route::prefix('niveaux')->group(function(){
-        Route::get('/',[SchoolLevelController::class, 'index'])->name( 'niveaux' );
+        Route::get('/',[SchoolLevelController::class, 'index'])->name( 'niveaux' )
+        ->middleware('auth');
         Route::get('/create-school-Level', [SchoolLevelController::class,'create']) -> name('create-school-level');
         Route::get('/edit-school-Level/{level}', [SchoolLevelController::class,'edit']) -> name('edit-school-level');
 
@@ -57,7 +60,7 @@ Route::middleware([
 
         Route::get('/create-batiment', [SchoolBatimentController::class,'create']) -> name('create-batiment');
 
-        Route::get('/edit-batiment/{batiment}', [SchoolBatimentController::class,'edit']) -> name('school.edit-batiment');
+        Route::get('/edit-batiment/{batiment}', [SchoolBatimentController::class,'edit']) -> name('edit-batiment');
 
     });
 
@@ -68,26 +71,55 @@ Route::middleware([
     });
 
 
-   Route::prefix('eleves')->group(function(){
+    Route::prefix('eleves')->group(function(){
         Route::get('/', [SchoolStudentController::class, 'index'])->name('eleves');
 
         Route::get('/edit-student/{eleve}', [SchoolStudentController::class, 'edit'])->name('edit-eleves');
 
         Route::get('/create-student', [SchoolStudentController::class, 'create'])->name('create-student');
-
-        Route::get('/getStudentsByMatricule/{matricule}', [SchoolStudentController::class, 'getStudentsByMatricule'])->name('getStudentsByMatricule');
-
     });
 
+    Route::prefix('parents')->group(function(){
+        Route::get('/', [ParentController::class, 'index'])->name('parents');
+
+        Route::get('/edit-parent/{parent}', [ParentController::class, 'edit'])->name('edit-parent');
+
+        //Route::get('/create-parent', [ParentController::class, 'create'])->name('create-parent');
+    });
+
+    //autre
+    Route::get('/generate-pdf', [PdfController::class, 'generatePdf'])->name('generate-pdf');
+
+    Route::get('/classes/{classe}', [PdfController::class, 'exportListeClasseToExcel'])->name('listeClasse-export');
+
+    Route::get('/send-mail/{parent}', [SendMailController::class, 'OneParent'])->name('mail-one-parent');
+
+    Route::get('/send mails', [SendMailController::class, 'AllParent'])->name('mail-all-parent');
+
+
+
+    //affectations
     Route::prefix('affectation')->group(function () {
         Route::get('/', [SchoolAffecterController::class, 'index'])->name('affectation');
+
         Route::get('/create', [SchoolAffecterController::class, 'create'])->name('create-affectation');
+
         Route::get('/edit/{affectation}', [SchoolAffecterController::class, 'edit'])->name('edit-affectation');
+
+        Route::get('/create-directly/{affectation}', [SchoolAffecterController::class, 'createAffecterDirectly'])->name('affectation-directly');
     });
 
+    //inscription
     Route::prefix('inscription')->group(function () {
         Route::get('/', [SchoolInscrireController::class, 'index'])->name('inscription');
         Route::get('/create', [SchoolInscrireController::class, 'create'])->name('create-inscription');
+
         Route::get('/edit/{inscription}', [SchoolInscrireController::class, 'edit'])->name('edit-inscription');
+
+        Route::get('/paiement/{inscription}', [SchoolInscrireController::class, 'paiement'])->name('paiement-inscription');
+
+        Route::get('/inscription-paiement/{inscription}', [SchoolInscrireController::class, 'CreateInscrirePaiement'])->name('create-inscription-paiement');
+
+
     });
 });

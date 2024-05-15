@@ -5,8 +5,12 @@
         </h2>
     </x-slot>
 
-    <div class="py-2 px-12">
-        @livewire("create-level")
+    <div class="py-12">
+        <div class="mx-auto sm:px-6 lg:px-8 mt-6" style="max-width: 46rem">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                @livewire("create-level")
+            </div>
+        </div>
     </div>
 
 </x-app-layout>

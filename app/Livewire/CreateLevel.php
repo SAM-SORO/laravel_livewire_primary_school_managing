@@ -38,6 +38,7 @@ class CreateLevel extends Component
                                   ->first();
 
             if ($existingLevel) {
+
                 return redirect()->route('create-school-level')->with('error', 'Ce niveau a déjà été enregistrer .');
             }
 
@@ -54,6 +55,7 @@ class CreateLevel extends Component
                 return redirect()->route('niveaux')->with('success', 'Niveau ajouté avec succès');
 
             } catch(Exception $e) {
+                
                 return redirect()->route('create-school-level')->with('error', "Une erreur s'est produite lors de l'enregistrement du niveau");
             }
         }

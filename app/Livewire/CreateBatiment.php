@@ -33,7 +33,7 @@ class CreateBatiment extends Component
         $existingbatiment = batiment::where('nomBat', $this->nomBatiment)->first();
 
         if ($existingbatiment) {
-            return redirect()->route('school.create-batiment')->with('error', 'Ce batiment a déjà été enregistrer');
+            return redirect()->back()->with('error', 'Ce batiment a déjà été enregistrer');
         }
 
         try {

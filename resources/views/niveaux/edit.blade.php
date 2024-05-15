@@ -5,9 +5,14 @@
         </h2>
     </x-slot>
 
-    {{-- c'est avec la vue de livewire que je definit le contenue de mon code --}}
-    <div class="py-2 px-12">
-        @livewire("edit-level" , ['level'=>$level])
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-6">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                @livewire("edit-level" , ['level'=>$level])
+
+            </div>
+        </div>
     </div>
+
 
 </x-app-layout>

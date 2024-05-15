@@ -3,7 +3,9 @@ const mix = require('laravel-mix');
 mix.js('resources/js/app.js', 'public/js')
    .postCss('resources/css/app.css', 'public/css', [
        require('tailwindcss'),
-]).version();
-
-// En résumé, ce code indique à Laravel Mix de prendre le fichier resources/css/app.css, d'appliquer les transformations de Tailwind CSS et de compiler le résultat dans le fichier public/css/app.css.
-
+   ])
+   // Copier les fichiers de SweetAlert2 dans le répertoire public
+   .copy('node_modules/sweetalert2/dist/sweetalert2.all.min.js', 'public/js/sweetalert2.all.min.js')
+   .copy('node_modules/sweetalert2/dist/sweetalert2.min.css', 'public/css/sweetalert2.min.css')
+   // Versionner les fichiers compilés
+   .version();

@@ -9,7 +9,10 @@ class SchoolBatimentController extends Controller
 {
     //
     public function index(){
-        return view('batiment.index');
+        // Compter le nombre total d'élèves enregistrés
+        $totalBatiments = Batiment::count();
+
+        return view('batiment.index', ['totalBatiments' => $totalBatiments]);
     }
 
     public function create(){

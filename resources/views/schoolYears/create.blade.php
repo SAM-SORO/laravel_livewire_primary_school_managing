@@ -6,8 +6,15 @@
         </h2>
     </x-slot>
 
-    <div class="py-2 px-12">
-        @livewire("create-school-year")
+
+    <div class="py-12">
+        <div class="mx-auto py-6 sm:px-6 lg:px-8" style="max-width: 46rem">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                @livewire("create-school-year")
+                {{-- @livewire('li
+                ste-niveaux')--}}
+            </div>
+        </div>
     </div>
 
 </x-app-layout>

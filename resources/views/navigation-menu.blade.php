@@ -16,12 +16,16 @@
                         {{ __('Accueil') }}
                     </x-nav-link>
 
-                    <x-nav-link href="{{ route('affectation') }}" :active="request()->routeIs('affectation')">
-                        {{ __('affectations') }}
+                    <x-nav-link href="{{ route('schoolYears') }}" :active="request()->routeIs('schoolYears')">
+                        {{ __('Anne scolaire') }}
                     </x-nav-link>
 
-                    <x-nav-link href="{{ route('inscription') }}" :active="request()->routeIs('inscription')">
-                        {{ __('inscriptions') }}
+                    <x-nav-link href="{{ route('batiment') }}" :active="request()->routeIs('batiment')">
+                        {{ __('Batiment') }}
+                    </x-nav-link>
+
+                    <x-nav-link href="{{ route('niveaux') }}" :active="request()->routeIs('niveaux')">
+                        {{ __('Niveaux') }}
                     </x-nav-link>
 
                     <x-nav-link href="{{ route('classes') }}" :active="request()->routeIs('classes')">
@@ -33,16 +37,16 @@
                     </x-nav-link>
 
 
-                    <x-nav-link href="{{ route('niveaux') }}" :active="request()->routeIs('niveaux')">
-                        {{ __('Niveaux') }}
+                    <x-nav-link href="{{ route('parents') }}" :active="request()->routeIs('parents')">
+                        {{ __('Parents') }}
                     </x-nav-link>
 
-                    <x-nav-link href="{{ route('batiment') }}" :active="request()->routeIs('batiment')">
-                        {{ __('Batiment') }}
+                    <x-nav-link href="{{ route('inscription') }}" :active="request()->routeIs('inscription')">
+                        {{ __('inscriptions') }}
                     </x-nav-link>
 
-                    <x-nav-link href="{{ route('schoolYears') }}" :active="request()->routeIs('schoolYears')">
-                        {{ __('Anne scolaire') }}
+                    <x-nav-link href="{{ route('affectation') }}" :active="request()->routeIs('affectation')">
+                        {{ __('affectations') }}
                     </x-nav-link>
 
                 </div>
@@ -129,7 +133,7 @@
                             </div>
 
                             <x-dropdown-link href="{{ route('profile.show') }}">
-                                {{ __('Profile') }}
+                                {{ __('Profil') }}
                             </x-dropdown-link>
 
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
@@ -146,7 +150,7 @@
 
                                 <x-dropdown-link href="{{ route('logout') }}"
                                          @click.prevent="$root.submit();">
-                                    {{ __('Log Out') }}
+                                    {{ __('Se deconnecter') }}
                                 </x-dropdown-link>
                             </form>
                         </x-slot>

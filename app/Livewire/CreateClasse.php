@@ -70,7 +70,8 @@ class CreateClasse extends Component
 
     public function render()
     {
-        $levels = Level::all();
+        $activeSchoolYear = SchoolYear::where('active', '1')->first();
+        $levels = Level::Where('schoolYear_id', $activeSchoolYear->id)->get();
         $batiments = Batiment::all();
 
         // Utilisez compact() avec les noms des variables en tant que chaînes

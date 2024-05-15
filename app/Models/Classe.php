@@ -24,4 +24,11 @@ class Classe extends Model
         return $this->belongsTo(Level::class, 'idLevel');
     }
 
+    public function affecter()
+    {
+        return $this->hasMany(Affecter::class);
+    }
+
+
+
 }

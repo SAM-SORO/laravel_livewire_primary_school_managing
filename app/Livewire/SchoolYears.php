@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Models\Classe;
+use App\Models\Level;
 use App\Models\SchoolYear;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -11,6 +13,10 @@ class SchoolYears extends Component
     use WithPagination;
 
     public $searchEnter = '';
+
+    public $schollYearIdToDelete; //l'schollYear a supprimer
+
+    protected $listeners = ['deleteConfirmed' => 'deleteSchollYear'];
 
 
     public function changerStatus(SchoolYear $schoolYear)
@@ -23,11 +29,40 @@ class SchoolYears extends Component
         $schoolYear->save();
     }
 
-    public function search()
+    public function confirmDelete($schollYearId)
     {
-        // Exécute une requête de recherche basée sur l'année saisie
-        $this->resetPage();
+        $this->schollYearIdToDelete = $schollYearId;
+        $this->dispatch('show-delete-modal');
     }
+
+    public function deleteSchollYear(){
+        $schoolYearToDelete = SchoolYear::findOrFail($this->schollYearIdToDelete);
+
+        // Vérifier si l'année scolaire à supprimer est active
+        if ($schoolYearToDelete->active) {
+            session()->flash('error', 'Impossible de supprimer une année scolaire active.');
+            return redirect()->back();
+        }
+
+        // Vérifier s'il existe des classes associées à cette année scolaire
+        $classesCount = Classe::where('schoolYear_id', $schoolYearToDelete->id)->count();
+
+        // Vérifier s'il existe des niveaux associés à cette année scolaire
+        $levelsCount = Level::where('schoolYear_id', $schoolYearToDelete->id)->count();
+
+        if ($classesCount > 0 || $levelsCount > 0) {
+            // Si des classes ou des niveaux sont associés, émettre un message d'erreur
+            session()->flash('error', 'Impossible de supprimer cette année scolaire car elle est en relation avec des classes ou des niveaux.');
+            return redirect()->back();
+        } else {
+            // Supprimer l'année scolaire si aucune classe ni niveau n'est associé et si elle n'est pas active
+            $schoolYearToDelete->delete();
+            $this->dispatch('inscription-deleted');
+        }
+    }
+
+
+
 
     public function render()
     {
@@ -45,7 +80,7 @@ class SchoolYears extends Component
                 })
                 ->paginate(5);
         } else {
-            $schoolYearList = SchoolYear::paginate(10);
+            $schoolYearList = SchoolYear::orderBy('startYear')->paginate(10);
         }
 
         return view('livewire.school-years', ['schoolYearList' => $schoolYearList]);

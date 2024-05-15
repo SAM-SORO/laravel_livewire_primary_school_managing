@@ -1,8 +1,13 @@
-import './bootstrap';
-
-// Méthode ES6 (utilisant import)
+require('./bootstrap');
+require('flowbite');
+/*Méthode ES6 (utilisant import)
 import Swal from 'sweetalert2';
+window.Swal = Swal;*/
+// nous allons utiliser commonJs pour importer
+const Swal = require('sweetalert2');
 window.Swal = Swal;
+
+
 
 
 document.addEventListener('DOMContentLoaded', function() {

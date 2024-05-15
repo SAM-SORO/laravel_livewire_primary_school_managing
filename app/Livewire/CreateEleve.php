@@ -1,25 +1,47 @@
 <?php
 namespace App\Livewire;
 
+use App\Mail\SendParentCreate;
+use App\Models\Parents;
+use App\Models\SchoolYear;
 use App\Models\Student;
 use Carbon\Carbon;
 use Carbon\Exceptions\Exception;
+use Exception as GlobalException;
+use Illuminate\Http\File;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-
+use Twilio\Rest\Client;
 
 class CreateEleve extends Component
 {
     use WithFileUploads;
     public $nom;
     public $prenom;
-    public $age;
     public $genre;
     public $naissance;
     public $parent;
     public $photo;
+    public $nomParent;
+    public $prenomParent;
+    public $emailParent;
+    public $contactParent;
+
+
+
+    public $photoUrl; // Ajoutez cette propriété pour stocker l'URL de l'image
+
+    public function updatedPhoto($value)
+    {
+        // Mettez à jour l'URL de l'image lorsque la photo est mise à jour
+        $this->photoUrl = $this->photo->temporaryUrl();
+    }
+
+
 
     public function annuler()
     {
@@ -30,25 +52,62 @@ class CreateEleve extends Component
     {
         // Définir les messages personnalisés
         $messages = [
-            'nom.required' => 'Le champ nom est requis.',
-            'prenom.required' => 'Le champ prénom est requis.',
-            'age.required' => 'Le champ âge est requis.',
-            'age.integer' => 'Le champ âge doit être un nombre entier.',
+            'nom.required' => 'Le nom de l\'élève est requis.',
+            'nom.string' => 'Le nom doit être une chaîne de caractères.',
+            'nom.regex' => 'Le nom ne doit pas contenir de caractères spéciaux ou des chifres.',
+            'prenom.required' => 'Le prénom de l\'élève est requis.',
+            'prenom.string' => 'Le prénom doit être une chaîne de caractères.',
+            'prenom.regex' => 'Le prenom ne doit pas contenir de caractères spéciaux ou des chifres.',
             'naissance.required' => 'Le champ date de naissance est requis.',
             'naissance.date' => 'Le champ date de naissance doit être une date valide.',
-            'parent.required' => 'Le contact d\'un parent est requis.',
-            'parent.min' => 'Le contact du parent doit avoir au moins :min chiffres.',
-            'parent.regex' => 'Le champ contact du parent doit contenir uniquement des chiffres.',
-            'age.between' => 'L\'âge doit être compris entre 6 et 16 ans.',
+            'genre.required' => 'Le champ genre est requis.',
+            'nomParent.required' => 'Le nom du parent est requis.',
+            'nomParent.string' => 'Le nom du parent doit être une chaîne de caractères.',
+            'nomParent.regex' => 'Le nom du parent ne doit pas contenir de caractères spéciaux ou des chifres.',
+            'prenomParent.required' => 'Le prénom du parent est requis.',
+            'prenomParent.string' => 'Le prénom du parent doit être une chaîne de caractères.',
+            'prenomParent.regex' => 'Le prénom du parent  ne doit pas contenir de caractères spéciaux ou des chifres.',
+            'contactParent.required' => 'Le champ contact du parent est requis.',
+            'emailParent.required' => 'L\'adresse e-mail est requise.',
+            'emailParent.email' => 'L\'adresse e-mail doit être une adresse e-mail valide.',
+            'emailParent.unique' => 'L\'adresse e-mail est déjà utilisée.',
+            'contactParent.string' => 'Le champ contact du parent doit être une chaîne de caractères.',
+            'contactParent.regex' => 'Le champ contact du parent ne doit contenir que des chiffres.',
+            'contactParent.size' => 'Le champ contact du parent doit contenir exactement :size chiffres.',
+            'photo.nullable' => 'Le fichier photo doit être de type image.',
+            'photo.file' => 'Le fichier photo doit être de type image.',
         ];
 
-        $validatedData = Validator::make($this->all(), [
-            'nom' => 'required|string',
-            'prenom' => 'required|string',
-            'age' => 'required|integer|between:6,16',
+
+        $this->validate([
+            'nom' => ['required', 'string', 'regex:/^[a-zA-ZÀ-ÿ\s\-]*$/'], // Seuls les lettres, espaces et tirets sont autorisés
+            'prenom' => ['required', 'string', 'regex:/^[a-zA-ZÀ-ÿ\s\-]*$/'], // Seuls les lettres, espaces et tirets sont autorisés
             'genre' => 'required|string',
-            'naissance' => 'required|date',
-            'parent' => [
+            'naissance' => [
+                'required',
+                'date',
+                // Fonction de validation pour l'âge
+                function ($attribute, $value, $fail) {
+                    // Récupérer l'année actuelle
+                    $currentYear = Carbon::now()->year;
+
+                    // Calculer les bornes d'âge
+                    $minBirthYear = $currentYear - 16; // L'élève ne doit pas dépasser 16 ans
+                    $maxBirthYear = $currentYear - 6;  // L'élève doit avoir au moins 6 ans
+
+                    // Extraire l'année de naissance de la date fournie
+                    $birthYear = Carbon::parse($value)->year;
+
+                    // Vérifier si l'année de naissance est dans l'intervalle autorisé
+                    if ($birthYear < $minBirthYear || $birthYear > $maxBirthYear) {
+                        $fail('L\'année de naissance de l\'élève doit être comprise entre ' . $minBirthYear . ' et ' . $maxBirthYear . ' (entre 6 et 16 ans).');
+                    }
+                },
+            ],
+            'emailParent' => 'required|email',
+            'nomParent' => ['required', 'string', 'regex:/^[a-zA-ZÀ-ÿ\s\-]*$/'], // Seuls les lettres, espaces et tirets sont autorisés
+            'prenomParent' => ['required', 'string', 'regex:/^[a-zA-ZÀ-ÿ\s\-]*$/'], // Seuls les lettres, espaces et tirets sont autorisés
+            'contactParent' => [
                 'required',
                 'string',
                 'regex:/^[0-9 ]*$/',
@@ -56,7 +115,7 @@ class CreateEleve extends Component
                     // Supprimer tous les espaces
                     $phoneWithoutSpaces = str_replace(' ', '', $value);
                     if (strlen($phoneWithoutSpaces) !== 10) {
-                        $fail('Le champ contact du parent doit contenir exactement 10 chiffres.');
+                        $fail('Le contact doit contenir exactement 10 chiffres.');
                     }
                 },
             ],
@@ -64,14 +123,13 @@ class CreateEleve extends Component
         ], $messages);
 
 
-        // if ($validatedData->fails()) {
-        //     return redirect()->back()->with('error', $validatedData->errors()->first());
-        // dd($validatedData->errors()->all());
-        // }
         try {
 
             // Récupérer l'année en cours
-            $anneeEnCours = Carbon::now()->format('y');
+            $activeYear = SchoolYear::where('active', 1)->value('currentYear');
+
+            // Formater l'année en format "y"
+            $anneeEnCours = substr($activeYear, -2);
 
             do {
                 // Générer une suite aléatoire de chiffres pour le matricule
@@ -88,9 +146,10 @@ class CreateEleve extends Component
 
             } while ($matriculeExiste);
 
-            $validatedData = $validatedData->validated(); //pour pouvoir acceder au element comme ça $validatedData['matricule']
 
-            $existingStudent = Student::where('nom', $validatedData['nom'])->where('nom', $validatedData['prenom'])->first();
+
+            $existingStudent = Student::where('nom', $this->nom)->where('prenom', $this->prenom)->first();
+
 
             if ($existingStudent) {
                 // Si l'élève existe déjà, vous pouvez renvoyer un message d'erreur ou effectuer une autre action nécessaire
@@ -98,14 +157,14 @@ class CreateEleve extends Component
                 return redirect()->back();
             }
 
+
             $student = new Student();
-            $student->nom = $validatedData['nom'];
+            $student->nom = $this->nom;
             $student->matricule = $matricule;
-            $student->prenom = $validatedData['prenom'];
-            $student->sexe = $validatedData['genre'];
-            $student->age = $validatedData['age'];
-            $student->naissance = $validatedData['naissance'];
-            $student->contactParent = $validatedData['parent'];
+            $student->prenom = $this->prenom;
+            $student->sexe = $this->genre;
+            $student->naissance = $this->naissance;
+            $student->contactParent = $this->contactParent;
 
             //concernat la photo
             if ($this->photo) {
@@ -128,15 +187,86 @@ class CreateEleve extends Component
                 $student->photo = $fileName;
             }
 
-            $student->save();
 
-            session()->flash('success', 'Élève ajouté avec succès');
-            return redirect()->route('eleves');
 
-        } catch(Exception $e) {
-            session()->flash('error', 'Une erreur est survenue lors de l\'ajout de l\'élève.');
+            if($student->save()){
+
+
+                // Vérifier si le parent existe déjà
+                $parent = Parents::where('nom', $this->nomParent)
+                ->where('prenom', $this->prenomParent)
+                ->where('contact', $this->contactParent)
+                ->first();
+
+                // Si le parent n'existe pas, créez un nouveau parent
+                if (!$parent) {
+                    $parent = new Parents();
+                    $parent->nom = $this->nomParent;
+                    $parent->prenom = $this->prenomParent;
+                    $parent->email = $this->emailParent;
+                    $parent->contact = $this->contactParent;
+                    $student->parents()->attach($parent->id);
+
+
+                    $parent->save();
+
+                }
+
+                // Associez le parent à l'élève
+                $student->parents()->attach($parent->id);
+
+                // Envoyer l'email au parent
+                try {
+                    Mail::to($this->emailParent)->send(new SendParentCreate([
+                        'nom' => $this->nomParent,
+                        'prenom' => $this->prenomParent,
+                        'enfant' => $this->nom . " " . $this->prenom,
+                        // Ajoutez d'autres données du parent ici
+                    ]));
+
+                    $contact = '225' . str_replace(' ', '', $this->contactParent);
+
+                    if(CreateEleve::sendMessage($contact)){
+                        session()->flash('success', 'Élève enregistrer avec succès. email enoyée au parent avec un SMS');
+                        return redirect()->route('eleves');
+                    };
+
+                    session()->flash('success', 'Élève enregistrer avec succès. email enoyée au parent');
+                    return redirect()->route('eleves');
+
+                } catch (\Exception $e) {
+                    // Gérer l'exception si l'envoi d'email échoue
+                    session()->flash('success', 'Élève enregistrer avec succès');
+                    return redirect()->route('eleves');
+                }
+            }
+
+        } catch(GlobalException $e) {
+            session()->flash('error', 'Une erreur est survenue lors de l\'ajout de l\'élève.' . $e->getMessage());
             // Log error message if needed
             return redirect()->back();
+        }
+    }
+
+
+
+    public function sendMessage($contact){
+
+        $basic  = new \Vonage\Client\Credentials\Basic("ee10a270", "q7c2iKvDZpad7iRG");
+        $client = new \Vonage\Client($basic);
+
+        $message = 'Bonjour Mr/Mme. Vous venez d\'etre ajouté en tant que parent de l\'elève '.$this->nom . " " .$this->prenom .  'à l\'ecole primaire la colombe de koumassi';
+
+        $response = $client->sms()->send(
+            new \Vonage\SMS\Message\SMS($contact, "soro", $message)
+        );
+
+        $message = $response->current();
+
+        if ($message->getStatus() == 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 

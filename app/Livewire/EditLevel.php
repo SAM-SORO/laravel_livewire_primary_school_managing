@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Inscrire;
 use App\Models\Level;
 use App\Models\SchoolYear;
 use Carbon\Exceptions\Exception;
@@ -29,6 +30,7 @@ class EditLevel extends Component
     }
 
     public function store(){
+
         $this->validate([
             'niveau' => 'string|required',
             'scolarite' => 'integer|required',
@@ -38,25 +40,40 @@ class EditLevel extends Component
 
         $activeSchoolYear = SchoolYear::where('active', '1')->first();
 
+
         // Vérifier si le niveau a déjà été ajouté
         $existingLevel = Level::where('libele', $this->niveau)
-                                ->where('schoolYear_id', $activeSchoolYear->id)
                                 ->where('id', '!=', $this->level->id) // Exclure le niveau en cours de modification
+                                ->where('schoolYear_id', $activeSchoolYear->id)
                                 ->first();
 
         if ($existingLevel) {
-            return redirect()->route('school.edit-school-level', $this->level->id)->with('error', 'Veuillez choisir un autre nom de niveau.');
+            return redirect()->back()->with('error', 'Ce niveau existe déjà.');
         }
 
-        $level = Level::find($this->level->id);
+
+        $level = Level::where('id',$this->level->id)->where('schoolYear_id', $activeSchoolYear->id)->first();
 
         $level->libele = $this->niveau;
         $level->scolarite = $this->scolarite;
 
         $level->save();
 
+        $inscriptions = Inscrire::where('level_id', $this->level->id)->where('schoolYear_id', $activeSchoolYear->id)->get();
+
+
+        foreach ($inscriptions as $inscription){
+            // Si le montant payé est inferieur à la scolarité, l'inscription est marquée comme incomplète
+            if ($this->scolarite >  $inscription->montant) {
+                $inscription->etatPaiement = '0';
+                $inscription->save();
+            }
+        }
+
+
         return redirect()->route('niveaux')->with('success', 'Niveau modifié avec succès.');
     }
+
 
 
     public function render()

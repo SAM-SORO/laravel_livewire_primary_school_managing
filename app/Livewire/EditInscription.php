@@ -15,7 +15,7 @@ class EditInscription extends Component
     public $eleve;
     public $idNiveau;
     public $matricule;
-    public $montantTotal; // Montant total de la scolarité
+    public $montantScolarite; // Montant total de la scolarité
     public $montantPaye; // Montant déjà payé par l'utilisateur
 
     public function annuler()
@@ -24,29 +24,11 @@ class EditInscription extends Component
     }
 
     public function mount(){
-        //$this->eleve = $inscription-
-
-    }
-
-    public function updatedMatricule($value){
-
-        if (!empty($this->matricule)) {
-            $student = Student::where('matricule', trim($this->matricule))->first();
-            if ($student) {
-                $this->eleve = $student->nom . ' ' . $student->prenom;
-            }else{
-                $this->eleve = "";
-            }
-        }
-    }
-
-    public function updatedIdNiveau($value)
-    {
-        // je peux bien remplacer $value par $this->idNiveau sans faire de passage en parametre
-        if (!empty($value)) {
-            $level = Level::find($value);
-            $this->montantTotal = $level->scolarite;
-        }
+        $this->matricule = $this->inscription->student->matricule;
+        $this->eleve = $this->inscription->student->nom. " " . $this->inscription->student->prenom;
+        $this->idNiveau = $this->inscription->level->id;
+        $this->montantScolarite = $this->inscription->level->scolarite;
+        $this->montantPaye = $this->inscription->montant;
     }
 
 
@@ -74,56 +56,56 @@ class EditInscription extends Component
             // Récupération de l'étudiant
             $student = Student::where('matricule', $this->matricule)->first();
 
-            // Vérification si l'élève est déjà inscrit pour l'année scolaire active
+
+            //Vérification si l'élève est déjà inscrit pour l'année scolaire active
             $existingInscription = Inscrire::where('student_id', $student->id)
-            ->where('schoolYear_id', $activeSchoolYear->id)
-            ->exists();
+                                            ->where('schoolYear_id', $activeSchoolYear->id)
+                                            ->where('id', '!=', $this->inscription->id)  //ecclure l'inscription en cours
+                                            ->exists();
 
             if ($existingInscription) {
                 session()->flash('error', 'Cet élève est déjà inscrit pour l\'année scolaire en cours.');
                 return redirect()->back();
             }
 
-            if ($this->montantPaye > $this->montantTotal   ) {
+            if ($this->montantPaye > $this->montantScolarite) {
                 session()->flash('error', 'la somme payer est superieur au montant de la scolarite!');
                 return redirect()->back();
             }
 
             // Récupération du niveau
-            $level = Level::find($this->idNiveau);
+            $level = Level::where('id', $this->idNiveau)->first();
 
             // Création d'une nouvelle inscription
-            $inscription = new Inscrire();
+            $inscription = Inscrire::where('id', $this->inscription->id)->where('schoolYear_id', $activeSchoolYear->id)->first();
 
-            // Attribution des valeurs
-            $inscription->student_id = $student->id;
             $inscription->level_id = $this->idNiveau;
             $inscription->montant = $this->montantPaye;
 
             // Si le montant payé est égal à la scolarité, l'inscription est marquée comme complète
             if ($this->montantPaye == $level->scolarite) {
-                $inscription->etatInscription = '1';
+                $inscription->etatPaiement = '1';
+            }else{
+                $inscription->etatPaiement = '0';
             }
 
-            // Attribution de l'année scolaire active
-            $inscription->schoolYear_id = $activeSchoolYear->id;
-
             // Enregistrement de l'inscription
-            $inscription->save();
+           $inscription->save();
 
             // Redirection avec un message de succès
-            return redirect()->route('inscription')->with('success', 'Inscription effectuée');
+            return redirect()->route('inscription')->with('success', 'modification enregistrée avec succès');
+
         } catch (Exception $e) {
             // En cas d'erreur, redirection avec un message d'erreur
-            return redirect()->route('create-inscription')->with('error', 'Erreur rencontrée. L\'inscription n\'a pas été enregistrée.');
+            return redirect()->back()->with('error', 'Erreur rencontrée. La modification n\'a pas été enregistrée.' . $e->getMessage());
         }
-
-
-
     }
+
     public function render()
     {
-        $levels = Level::all();
+        $activeSchoolYear = SchoolYear::where('active', '1')->first();
+
+        $levels = Level::where('schoolYear_id', $activeSchoolYear->id)->get();
 
         return view('livewire.edit-inscription' , compact('levels'));
     }

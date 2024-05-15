@@ -9,7 +9,11 @@ class SchoolStudentController extends Controller
 {
     //
     public function index(){
-        return  view('eleves.list');
+        // Compter le nombre total d'élèves enregistrés
+        $totalStudents = Student::count();
+
+        // Passer le nombre total d'élèves à la vue
+        return view('eleves.list', ['totalStudents' => $totalStudents]);
     }
 
       // Affiche la vue pour créer une nouvelle année scolaire
@@ -22,9 +26,5 @@ class SchoolStudentController extends Controller
         return view('eleves.edit', compact('eleve'));
     }
 
-    public function getStudentsByMatricule(Request $request, $matricule)
-    {
-        $students = Student::where('matricule', 'like', $matricule . '%')->get();
-        return response()->json($students);
-    }
+
 }

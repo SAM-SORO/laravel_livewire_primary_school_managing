@@ -11,19 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('levels', function (Blueprint $table) {
-            //
-            Schema::create('levels', function (Blueprint $table) {
-                $table->id()->autoIncrement();
-                $table->string('libele'); // fait allusion a la classe
-                $table->integer('scolarite'); //montant de scolarite
-
-                $table->unsignedBigInteger('schoolYear_id');
-                $table->foreign('schoolYear_id')->references('id')->on('school_years');
-                
-                $table->timestamps();
-            });
+        Schema::create('levels', function (Blueprint $table) {
+            $table->id()->autoIncrement();
+            $table->string('libele'); // fait allusion a la classe
+            $table->integer('scolarite'); //montant de scolarite
+            $table->unsignedBigInteger('schoolYear_id');
+            $table->foreign('schoolYear_id')->references('id')->on('school_years');
+            $table->timestamps();
         });
+
     }
 
     /**
@@ -31,8 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('levels', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('levels');
     }
 };

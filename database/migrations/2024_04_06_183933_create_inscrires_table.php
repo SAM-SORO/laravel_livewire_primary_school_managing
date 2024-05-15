@@ -17,10 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students');
 
-            $table->enum('etatAffectation', [0, 1])->default(0);
-
             // Nouvelle colonne pour l'état de l'inscription
-            $table->enum('etatInscription', [0, 1])->default(0);
+            $table->enum('etatPaiement', [0, 1])->default(0);
 
             $table->unsignedBigInteger('level_id');
             $table->foreign('level_id')->references('id')->on('levels');

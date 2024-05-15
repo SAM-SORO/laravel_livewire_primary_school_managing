@@ -5,8 +5,12 @@
         </h2>
     </x-slot>
 
-    <div class="py-2 px-12">
-        @livewire('create-eleve')
+    <div class="py-4">
+        <div class="mx-auto sm:px-6 lg:px-8" style="max-width: 70rem">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                @livewire('create-eleve')
+            </div>
+        </div>
     </div>
 </x-app-layout>
 

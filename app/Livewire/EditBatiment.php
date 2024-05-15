@@ -18,6 +18,11 @@ class EditBatiment extends Component
         $this->dateConstruction = $this->batiment->dateBat;
     }
 
+    public function annuler()
+    {
+        return redirect()->route('batiment');
+    }
+
     public function store()
     {
 

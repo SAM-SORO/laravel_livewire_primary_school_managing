@@ -20,16 +20,15 @@ return new class extends Migration
             $table->unsignedBigInteger('idBat');
             $table->foreign('idBat')->references('id')->on('batiments')->onDelete('cascade');
 
-
             $table->unsignedBigInteger('idLevel');
             $table->foreign('idLevel')->references('id')->on('levels')->onDelete('cascade');
 
-
             $table->unsignedBigInteger('schoolYear_id');
             $table->foreign('schoolYear_id')->references('id')->on('school_years');
-            
+
             $table->timestamps();
         });
+
     }
 
     /**
